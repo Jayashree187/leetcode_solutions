@@ -1,0 +1,36 @@
+
+
+class Solution(object):
+    def isMatch(self, s, p):
+        """
+        :type s: str
+        :type p: str
+        :rtype: bool
+        """
+        memo = {}
+
+        def dp(i, j):
+            if (i, j) in memo:
+                return memo[(i, j)]
+            
+            # If pattern reaches the end, string must also reach the end
+            if j == len(p):
+                return i == len(s)
+            
+            # Check if the first characters match
+            first_match = i < len(s) and (p[j] == s[i] or p[j] == '.')
+            
+            # Handle '*' character
+            if j + 1 < len(p) and p[j + 1] == '*':
+                # Two choices: 
+                # 1. Match zero occurrences of the preceding element (skip p[j] and p[j+1])
+                # 2. Match one or more occurrences (if first_match is true, advance s pointer i)
+                ans = dp(i, j + 2) or (first_match and dp(i + 1, j))
+            else:
+                # Regular match for current character, advance both pointers
+                ans = first_match and dp(i + 1, j + 1)
+                
+            memo[(i, j)] = ans
+            return ans
+
+        return dp(0, 0)
